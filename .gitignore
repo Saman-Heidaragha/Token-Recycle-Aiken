@@ -1,0 +1,4 @@
+# Aiken compilation artifacts
+artifacts/
+# Aiken's default documentation export
+docs/
