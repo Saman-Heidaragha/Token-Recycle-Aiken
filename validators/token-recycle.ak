@@ -1,10 +1,14 @@
 use aiken/hash.{Blake2b_224, Hash}
-use aiken/transaction.{ScriptContext, Transaction, Input, Output}
+use aiken/transaction.{OutputReference, ScriptContext, Transaction, Input, Output}
 use aiken/transaction/value.{PolicyId, AssetName, Value, quantity_of, from_asset}
-use aiken/transaction/credential.{VerificationKey, Address, VerificationKeyCredential, ScriptCredential}
+use aiken/transaction/credential.{VerificationKey, Address, VerificationKeyCredential, ScriptCredential, from_verification_key}
 use aiken/list.{any, at}
+use aiken/bytearray
+use aiken/builtin.{blake2b_256, serialise_data}
+use aiken/math/rational.{zero}
 
 type SenderPKH = Hash<Blake2b_224, VerificationKey>
+type TokenValue = Value
 
 type RewardToken {
     pi: PolicyId,
