@@ -147,3 +147,34 @@ validator recycle_policy(utxo_ref: OutputReference) {
     fail @"unsupported purpose"
   }
 }
+
+test test_vRecycle_success() {
+  let sender = "#abcdef0123456789abcdef0123456789abcdef0123456789abcdef01"
+  // Fake PKH
+  let asset_name = "746f6b656e"
+  // "token"
+  let policy = "#00010203040506070809000102030405060708090001020304050607"
+
+  let datum =
+    RecycleDatum {
+      receiverPKH: sender,
+      tokenValue: RewardToken { pi: policy, an: asset_name, qty: 2 },
+      policyId: policy,
+    }
+
+  let expected_output =
+    Output {
+      address: Address {
+        payment_credential: VerificationKey(sender),
+        stake_credential: None,
+      },
+      value: from_asset(policy, asset_name, 6),
+      // 2 * 3
+      datum: InlineDatum(datum),
+      reference_script: None,
+    }
+
+  let tx = Transaction { ..placeholder, outputs: [expected_output] }
+
+  vRecycle(sender, datum, tx) == True
+}
