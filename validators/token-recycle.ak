@@ -1,10 +1,12 @@
 use aiken/collection/list.{any, at}
 use aiken/crypto.{Blake2b_224, Hash, VerificationKeyHash}
 use cardano/address.{Address, Script, VerificationKey}
-use cardano/assets.{AssetName, PolicyId, Value, from_asset, quantity_of, zero}
-use cardano/transaction.{Output, OutputReference, Transaction}
+use cardano/assets.{AssetName, PolicyId, Value, from_asset, quantity_of}
+use cardano/transaction.{
+  Output, OutputReference, Transaction, Datum, InlineDatum,
+}
 
-type SenderPKH =
+pub type SenderPKH =
   Hash<Blake2b_224, VerificationKeyHash>
 
 pub type RewardToken {
@@ -50,6 +52,30 @@ test test_rewardX() {
 
 fn has_token(policy_id: PolicyId, token_name: AssetName, val: Value) -> Bool {
   quantity_of(val, policy_id, token_name) >= 1
+}
+
+test test_has_token() {
+  let policy = "#00010203040506070809000102030405060708090001020304050607"
+  let asset_name = "746f6b656e"
+  // hex for "token"
+  // Value that includes the token
+  let val = from_asset(policy, asset_name, 5)
+
+  let result = has_token(policy, asset_name, val)
+
+  result == True
+}
+
+test test_has_token_none() {
+  let policy = "#00010203040506070809000102030405060708090001020304050607"
+  let asset_name = "746f6b656e"
+  // hex for "token"
+  // Value with zero quantity
+  let val = from_asset(policy, asset_name, 0)
+
+  let result = has_token(policy, asset_name, val)
+
+  result == False
 }
 
 fn check_incoming_tx(
